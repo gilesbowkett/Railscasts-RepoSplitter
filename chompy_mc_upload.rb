@@ -18,12 +18,30 @@ class ChompyMcUpload
   end
 
   def list
-    Dir.new(@railscast_repos).collect do |railscast_repo|
+    (Dir.new(@railscast_repos).collect do |railscast_repo|
       next unless (episode = railscast_repo.match /episode-(\d+)/)
-      episode.chomp
-    end
+      episode[0].chomp
+    end).compact
+  end
+
+  # assumes you've already removed the .git dir
+  def push(episode)
+    puts "creating repo    #{episode}"
+    # create episode
+    puts "pushing episode  #{episode}"
+    command_line = <<-COMMAND_LINE
+      cp -r #{@railscast_repos}/#{episode} episodes/#{episode}
+      cd episodes/#{episode}
+      git init
+      git add .
+      git commit -m 'automatic import from ryanb/railscasts-episodes'
+      git remote add origin git@github.com:gilesbowkett/#{episode}.git
+      git push -u origin master
+      cd -
+    COMMAND_LINE
+    puts command_line
   end
 end
 
-ChompyMcUpload.new.list
+ChompyMcUpload.new.push("asdfasdf")
 
