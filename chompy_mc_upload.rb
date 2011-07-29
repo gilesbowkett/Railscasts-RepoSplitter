@@ -8,7 +8,7 @@ class ChompyMcUpload
 
   def create(repo_name)
     begin
-      new_repo = github_credentials.merge :public => 1, :name => "railscasts/#{repo_name}"
+      new_repo = @github_credentials.merge :public => 1, :name => "railscasts/#{repo_name}"
       RestClient.post("https://github.com/api/v2/json/repos/create", new_repo)
     rescue RestClient::ResourceNotFound
       puts 404
@@ -27,7 +27,7 @@ class ChompyMcUpload
   # assumes you've already removed the .git dir
   def push(episode)
     puts "creating repo    #{episode}"
-    # create episode
+    create episode
     puts "pushing episode  #{episode}"
     command_line = <<-COMMAND_LINE
       cp -r #{@railscast_repos}/#{episode} episodes/#{episode}
@@ -35,13 +35,18 @@ class ChompyMcUpload
       git init
       git add .
       git commit -m 'automatic import from ryanb/railscasts-episodes'
-      git remote add origin git@github.com:gilesbowkett/#{episode}.git
+      git remote add origin git@github.com:railscasts/#{episode}.git
       git push -u origin master
       cd -
     COMMAND_LINE
     puts command_line
+    system command_line
+  end
+
+  def import
+    list.each {|episode| push episode}
   end
 end
 
-ChompyMcUpload.new.push("asdfasdf")
+ChompyMcUpload.new.import
 
