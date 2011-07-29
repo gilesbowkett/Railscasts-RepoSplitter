@@ -48,5 +48,6 @@ class ChompyMcUpload
   end
 end
 
+# FYI: kaboom! unless Dir.exists? "episodes"
 ChompyMcUpload.new.import
 
