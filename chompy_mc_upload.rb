@@ -48,6 +48,11 @@ class ChompyMcUpload
   end
 end
 
-# FYI: kaboom! unless Dir.exists? "episodes"
-ChompyMcUpload.new.import
+# import everything (FYI: kaboom! unless Dir.exists? "episodes")
+# ChompyMcUpload.new.import
+
+# had some trouble with these, redoing them manually
+@chompy = ChompyMcUpload.new
+@chompy.push "episode-174"
+@chompy.push "episode-277"
 
