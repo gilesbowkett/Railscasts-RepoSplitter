@@ -17,9 +17,13 @@ class ChompyMcUpload
     end
   end
 
+  def regex(repo)
+    repo.match /episode-(\d+)/
+  end
+
   def list
     (Dir.new(@railscast_repos).collect do |railscast_repo|
-      next unless (episode = railscast_repo.match /episode-(\d+)/)
+      next unless (episode = regex(railscast_repo))
       episode[0].chomp
     end).compact
   end
@@ -46,13 +50,32 @@ class ChompyMcUpload
   def import
     list.each {|episode| push episode}
   end
+
+  def get_real_url(episode)
+    redirect = fetch(episode)
+    redirect.match(%r{(http://railscasts.com/episodes/[^"]+)})[1]
+  end
+
+  # FIXME: all these xyz(episode) methods strongly suggest the need for an Episode object
+  def fetch(episode)
+    if (match = regex(episode))
+      episode_number = match[1]
+      Net::HTTP.get URI.parse("http://railscasts.com/episodes/#{episode_number}")
+    end
+  end
 end
 
-# import everything (FYI: kaboom! unless Dir.exists? "episodes")
-# ChompyMcUpload.new.import
-
-# had some trouble with these, redoing them manually
 @chompy = ChompyMcUpload.new
-@chompy.push "episode-174"
-@chompy.push "episode-277"
+
+# import everything (FYI: kaboom! unless Dir.exists? "episodes")
+#   @chompy.import
+
+# had some trouble with these, redid them manually
+#   @chompy.push "episode-174"
+#   @chompy.push "episode-277"
+
+# with this, I can get the GitHub "homepage" attribute for each repo
+puts @chompy.list.each {|episode| puts episode; puts @chompy.get_real_url(episode)}
+
+# getting descriptions requires that I hit the real URLs and parse the title tag
 
