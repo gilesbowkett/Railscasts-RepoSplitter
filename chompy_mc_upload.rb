@@ -67,15 +67,10 @@ end
 
 @chompy = ChompyMcUpload.new
 
-# import everything (FYI: kaboom! unless Dir.exists? "episodes")
+# this is how you import everything (FYI: kaboom! unless Dir.exists? "episodes")
 #   @chompy.import
 
-# had some trouble with these, redid them manually
-#   @chompy.push "episode-174"
-#   @chompy.push "episode-277"
-
-# with this, I can get the GitHub "homepage" attribute for each repo
-puts @chompy.list.each {|episode| puts episode; puts @chompy.get_real_url(episode)}
-
-# getting descriptions requires that I hit the real URLs and parse the title tag
+# in practice, re-importing again is unlikely to be necessary. this is how you
+# import just one episode:
+@chompy.push "episode-278"
 
